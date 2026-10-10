@@ -1,0 +1,60 @@
+name: quality-and-tests
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  quality-and-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Ruff lint
+        run: |
+          ruff check .
+          ruff format --check .
+
+      - name: Pytest (full suite)
+        run: pytest -q
+
+      - name: End-to-end demo smoke
+        run: python examples/run_demo.py benchmark.json
+
+  offline-no-heavy-deps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install numpy only (simulate offline, no scipy/networkx/sklearn)
+        run: pip install "numpy>=1.24"
+      - name: Offline benchmark smoke
+        run: python -m pytest tests/test_offline.py -q
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scan for secrets
+        run: |
+          if grep -rEn "AKIA[0-9A-Z]{16}|ghp_[0-9A-Za-z]{36}|xox[baprs]-[0-9A-Za-z-]{10,}|sk-[0-9A-Za-z]{32}|AIza[0-9A-Za-z_-]{35}" . --exclude-dir=.git --exclude-dir=.github; then
+            echo "::error::Possible secret leaked"; exit 1
+          fi
+          echo "secret scan OK"

@@ -1,0 +1,3 @@
+# graphForge 运行时依赖（零重依赖，纯 NumPy 实现）
+numpy>=1.24
+# 锁版本（本地验证环境）：numpy==2.5.3

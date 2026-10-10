@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "graphforge"
+version = "0.1.0"
+description = "graphForge — 纯 NumPy 世界级谱图学习与社区发现系统（Louvain/模块度 + 谱聚类 + WL 图核 + PageRank）。作者：晨星"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "晨星" }]
+keywords = ["graph", "community-detection", "louvain", "modularity", "spectral-clustering", "graph-kernel", "pagerank"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = ["numpy>=1.24"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
+[tool.setuptools.packages.find]
+include = ["graphforge*"]
+
+[project.scripts]
+graphforge = "graphforge.cli:main"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["ignore::UserWarning"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+exclude = [".git", "build", "dist", "__pycache__"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E741"]
+
+[tool.ruff.format]
+quote-style = "double"
