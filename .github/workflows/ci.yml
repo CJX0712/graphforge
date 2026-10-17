@@ -44,7 +44,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install numpy only (simulate offline, no scipy/networkx/sklearn)
-        run: pip install "numpy>=1.24"
+        run: pip install "numpy>=1.24" pytest
       - name: Offline benchmark smoke
         run: python -m pytest tests/test_offline.py -q
 
